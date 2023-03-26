@@ -4,41 +4,33 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
-//@AllArgsConstructor
-@NoArgsConstructor
-@Data
+/**
+ * Created by jt on 8/14/21.
+ */
 @Entity
-public class Book {
+@Data
+@NoArgsConstructor
+public class Author {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String title;
-    private String isbn;
-    private String publisher;
-    private Long authorId;
 
-    public Book(String title, String isbn, String publisher, Long authorId) {
-        this.title = title;
-        this.isbn = isbn;
-        this.publisher = publisher;
-        this.authorId = authorId;
-    }
+    private String firstName;
+    private String lastName;
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Book book = (Book) o;
+        Author author = (Author) o;
 
-        return Objects.equals(id, book.id);
+        return id != null ? id.equals(author.id) : author.id == null;
     }
 
     @Override
