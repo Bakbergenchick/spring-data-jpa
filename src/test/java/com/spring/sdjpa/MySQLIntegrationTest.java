@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("default")
+@ActiveProfiles("local")
 @DataJpaTest
 @ComponentScan(basePackages = {"com.spring.sdjpa.bootsrap"})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
