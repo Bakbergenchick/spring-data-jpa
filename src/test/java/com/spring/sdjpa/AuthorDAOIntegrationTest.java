@@ -52,7 +52,7 @@ public class AuthorDAOIntegrationTest {
         Author author = new Author();
         author.setId(3L);
 
-        book.setAuthor(author);
+        book.setId(1L);
         Book saved = bookDAO.saveNewBook(book);
 
         saved.setTitle("New Book");
@@ -73,7 +73,7 @@ public class AuthorDAOIntegrationTest {
         Author author = new Author();
         author.setId(3L);
 
-        book.setAuthor(author);
+        book.setAuthorId(1L);
         Book saved = bookDAO.saveNewBook(book);
 
         assertThat(saved).isNotNull();
@@ -93,56 +93,63 @@ public class AuthorDAOIntegrationTest {
         assertThat(book.getId()).isNotNull();
     }
 
+
     @Test
-    void testDeleteAuthor(){
-
+    void testDeleteAuthor() {
         Author author = new Author();
-        author.setFirstName("Aaron");
-        author.setLastName("Paul");
-        Author saveAuthor = authorDAO.saveAuthor(author);
+        author.setFirstName("john");
+        author.setLastName("t");
 
-        authorDAO.deleteAuthor(saveAuthor.getId());
+        Author saved = authorDAO.saveAuthor(author);
 
-        Author deleted = authorDAO.getById(saveAuthor.getId());
+        authorDAO.deleteAuthor(saved.getId());
 
+
+        Author deleted = authorDAO.getById(saved.getId());
         assertThat(deleted).isNull();
+
+        assertThat(authorDAO.getById(saved.getId()));
+
     }
 
     @Test
-    void testUpdateAuthor(){
-
+    void testUpdateAuthor() {
         Author author = new Author();
-        author.setFirstName("Craig");
-        author.setLastName("Walls");
-        Author saveAuthor = authorDAO.saveAuthor(author);
+        author.setFirstName("john");
+        author.setLastName("t");
 
-        saveAuthor.setLastName("Wolter");
-        Author updateAuthor = authorDAO.updateAuthor(saveAuthor);
+        Author saved = authorDAO.saveAuthor(author);
 
-        assertThat(updateAuthor.getLastName())
-                .isEqualTo("Wolter");
+        saved.setLastName("Thompson");
+        Author updated = authorDAO.updateAuthor(saved);
+
+        assertThat(updated.getLastName()).isEqualTo("Thompson");
     }
 
     @Test
-    void testSaveAuthor(){
-
+    void testSaveAuthor() {
         Author author = new Author();
-        author.setFirstName("Craig");
-        author.setLastName("Walls");
-        Author saveAuthor = authorDAO.saveAuthor(author);
+        author.setFirstName("John");
+        author.setLastName("Thompson");
+        Author saved = authorDAO.saveAuthor(author);
 
-        assertThat(saveAuthor).isNotNull();
+        assertThat(saved).isNotNull();
+        assertThat(saved.getId()).isNotNull();
     }
 
     @Test
-    void testGetByID(){
-        Author author = authorDAO.getById(1L);
-        assertThat(author).isNotNull();
-    }
-
-    @Test
-    void testGetByNameAndSurname(){
+    void testGetAuthorByName() {
         Author author = authorDAO.getByNameAndSurname("Craig", "Walls");
+
         assertThat(author).isNotNull();
+    }
+
+    @Test
+    void testGetAuthor() {
+
+        Author author = authorDAO.getById(1L);
+
+        assertThat(author).isNotNull();
+
     }
 }

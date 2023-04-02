@@ -17,14 +17,13 @@ public class Book {
     private String title;
     private String isbn;
     private String publisher;
-    @Transient
-    private Author author;
+    private Long authorId;
 
-    public Book(String title, String isbn, String publisher, Author authorId) {
+    public Book(String title, String isbn, String publisher, Long authorId) {
         this.title = title;
         this.isbn = isbn;
         this.publisher = publisher;
-        this.author = authorId;
+        this.authorId = authorId;
     }
 
     @Override
