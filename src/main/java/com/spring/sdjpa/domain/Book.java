@@ -6,6 +6,10 @@ import lombok.*;
 import java.util.Objects;
 
 //@AllArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "find_all_books", query = "select b from Book b"),
+        @NamedQuery(name = "find_by_title", query = "select b from Book b where b.title = :title")
+})
 @NoArgsConstructor
 @Entity
 @Data

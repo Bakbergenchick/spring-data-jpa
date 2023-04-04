@@ -1,13 +1,19 @@
 package com.spring.sdjpa.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
+
+@NamedQueries({
+        @NamedQuery(
+                name = "author_findAll",
+                query = "select a from Author a"),
+        @NamedQuery(
+                name = "author_ByNameAndSurname",
+                query = "select a from Author a where a.firstName =: first_name and a.lastName =: last_name")
+})
 
 @Entity
 @Data
