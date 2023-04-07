@@ -6,18 +6,21 @@ import com.spring.sdjpa.dao.BookDAO;
 import com.spring.sdjpa.dao.BookDAOImpl;
 import com.spring.sdjpa.domain.Author;
 import com.spring.sdjpa.domain.Book;
+import jakarta.persistence.EntityNotFoundException;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("local")
 @DataJpaTest
@@ -74,9 +77,9 @@ public class DAOIntegrationTest {
 
         bookDAO.deleteBookById(saved.getId());
 
-        Book deleted = bookDAO.getById(saved.getId());
-
-        assertThat(deleted).isNull();
+        assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+            bookDAO.getById(saved.getId());
+        });
     }
 
     @Test
@@ -150,10 +153,9 @@ public class DAOIntegrationTest {
         authorDAO.deleteAuthor(saved.getId());
 
 
-        Author deleted = authorDAO.getById(saved.getId());
-        assertThat(deleted).isNull();
-
-        assertThat(authorDAO.getById(saved.getId()));
+        assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+            Author deleted = authorDAO.getById(saved.getId());
+        });
 
     }
 
@@ -187,6 +189,13 @@ public class DAOIntegrationTest {
         Author author = authorDAO.getByNameAndSurname("Craig", "Walls");
 
         assertThat(author).isNotNull();
+    }
+
+    @Test
+    void testGetAuthorByNameNotFound() {
+        assertThrows(EntityNotFoundException.class, () -> {
+            Author author = authorDAO.getByNameAndSurname("foo", "bar");
+        });
     }
 
     @Test

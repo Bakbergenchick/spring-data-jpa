@@ -1,15 +1,11 @@
 package com.spring.sdjpa.dao;
 
 import com.spring.sdjpa.domain.Author;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
+import com.spring.sdjpa.repo.AuthorRepo;
+import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import java.sql.*;
 import java.util.List;
 
 @Component
@@ -17,6 +13,7 @@ import java.util.List;
 public class AuthorDAOImpl implements AuthorDAO {
 
     private final EntityManagerFactory emF;
+    private final AuthorRepo authorRepo;
 
     private EntityManager getEntityManager() {
         return emF.createEntityManager();
@@ -53,10 +50,7 @@ public class AuthorDAOImpl implements AuthorDAO {
 
     @Override
     public Author getById(Long id) {
-        EntityManager em = getEntityManager();
-        Author author = getEntityManager().find(Author.class, id);
-        em.close();
-        return author;
+        return authorRepo.getById(id);
     }
 
     @Override
@@ -75,60 +69,27 @@ public class AuthorDAOImpl implements AuthorDAO {
 
     @Override
     public Author getByNameAndSurname(String name, String surname) {
-        EntityManager em = getEntityManager();
-//        TypedQuery<Author> query = em.createQuery("select a from Author a " +
-//                "where a.firstName =: first_name and a.lastName =: last_name", Author.class);
-        try {
-            TypedQuery<Author> query = em.createNamedQuery("author_ByNameAndSurname", Author.class);
-            query.setParameter("first_name", name);
-            query.setParameter("last_name", surname);
-            Author author = query.getSingleResult();
-
-            return author;
-        }finally {
-            em.close();
-        }
-
+        return authorRepo.findAuthorByFirstNameAndLastName(name, surname)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
     public Author saveAuthor(Author author) {
-        EntityManager em = getEntityManager();
-        em.getTransaction().begin();
-        em.persist(author);
-        em.flush();
-        em.getTransaction().commit();
-        em.close();
-        return author;
+        return authorRepo.save(author);
     }
 
     @Override
     public Author updateAuthor(Author author) {
-        EntityManager em = getEntityManager();
+        Author authorById = authorRepo.getById(author.getId());
+        authorById.setLastName(author.getLastName());
+        authorById.setFirstName(author.getFirstName());
 
-
-        try {
-            em.joinTransaction();
-            em.merge(author);
-            em.flush();
-            em.clear();
-            Author updAuthor = em.find(Author.class, author.getId());
-            return updAuthor;
-        } finally {
-            em.close();
-        }
+        return authorRepo.save(authorById);
 
     }
 
     @Override
     public void deleteAuthor(Long id) {
-
-        try (EntityManager em = getEntityManager()) {
-            em.getTransaction().begin();
-            Author author = em.find(Author.class, id);
-            em.remove(author);
-            em.flush();
-            em.getTransaction().commit();
-        }
+        authorRepo.deleteById(id);
     }
 }
