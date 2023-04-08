@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -31,6 +32,7 @@ public class DAOIntegrationTest {
     @Autowired
     AuthorDAO authorDAO;
 
+    @Qualifier("bookDAOImpl")
     @Autowired
     BookDAO bookDAO;
 
@@ -55,17 +57,6 @@ public class DAOIntegrationTest {
         assertThat(books.size()).isGreaterThan(0);
     }
 
-    @Test
-    void getByISBN(){
-        Book book = new Book();
-        book.setIsbn("1234" + RandomString.make());
-        book.setTitle("ISBN Title");
-
-        Book newBook = bookDAO.saveNewBook(book);
-
-        Book byISBN = bookDAO.getByISBN(book.getIsbn());
-        assertThat(byISBN).isNotNull();
-    }
 
     @Test
     void testDeleteBook() {

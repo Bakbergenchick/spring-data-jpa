@@ -5,6 +5,9 @@ import com.spring.sdjpa.domain.Book;
 import com.spring.sdjpa.repo.BookRepo;
 import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -14,29 +17,35 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class BookDAOImpl implements BookDAO {
-    private final EntityManagerFactory emf;
     private final BookRepo bookRepo;
+
+    @Override
+    public List<Book> findAllBooksSortByTitle(Pageable pageable) {
+        Page<Book> books = bookRepo.findAll(pageable);
+        return books.getContent();
+    }
+
+    @Override
+    public List<Book> findAllBooks(Pageable pageable) {
+        return bookRepo.findAll(pageable).getContent();
+    }
+
+    @Override
+    public List<Book> findAllBooks(int pageSize, int offset) {
+        Pageable pageable  = PageRequest.ofSize(pageSize);
+
+        if (offset > 0){
+            pageable = pageable.withPage(offset / pageSize);
+        } else{
+            pageable = pageable.withPage(0);
+        }
+
+        return this.findAllBooks(pageable);
+    }
 
     @Override
     public List<Book> findAll() {
         return bookRepo.findAll();
-    }
-
-    @Override
-    public Book getByISBN(String isbn) {
-        EntityManager em = getEntityManager();
-
-        try{
-            TypedQuery<Book> query = em.createQuery("select a from Book a where a.isbn =: isbn",
-                    Book.class);
-            query.setParameter("isbn", isbn);
-
-            Book book = query.getSingleResult();
-
-            return book;
-        }finally {
-            em.close();
-        }
     }
 
     @Override
@@ -71,7 +80,4 @@ public class BookDAOImpl implements BookDAO {
         bookRepo.deleteById(id);
     }
 
-    private EntityManager getEntityManager(){
-        return emf.createEntityManager();
-    }
 }
