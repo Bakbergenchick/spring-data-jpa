@@ -1,10 +1,12 @@
 package com.spring.sdjpa.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -46,13 +48,29 @@ import lombok.Setter;
 })
 public class OrderHeader extends BaseEntity {
 
-    private String customer;
+    @ManyToOne
+    private Customer customer;
     @Embedded
     private Address shippingAddress;
     @Embedded
     private Address billToAddress;
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+    @OneToMany(
+            mappedBy = "orderHeader",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
+    private Set<OrderLine> orderLines;
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "orderHeader")
+    private OrderApproval orderApproval;
+
+    public void addOrderlinetToHeader(OrderLine orderLine) {
+        if (orderLines == null) {
+            orderLines = new HashSet<>();
+        }
+        orderLines.add(orderLine);
+        orderLine.setOrderHeader(this);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -66,7 +84,8 @@ public class OrderHeader extends BaseEntity {
             return false;
         if (getBillToAddress() != null ? !getBillToAddress().equals(that.getBillToAddress()) : that.getBillToAddress() != null)
             return false;
-        return getOrderStatus() == that.getOrderStatus();
+        if (getOrderStatus() != that.getOrderStatus()) return false;
+        return getOrderLines() != null ? getOrderLines().equals(that.getOrderLines()) : that.getOrderLines() == null;
     }
 
     @Override
@@ -76,6 +95,7 @@ public class OrderHeader extends BaseEntity {
         result = 31 * result + (getShippingAddress() != null ? getShippingAddress().hashCode() : 0);
         result = 31 * result + (getBillToAddress() != null ? getBillToAddress().hashCode() : 0);
         result = 31 * result + (getOrderStatus() != null ? getOrderStatus().hashCode() : 0);
+        result = 31 * result + (getOrderLines() != null ? getOrderLines().hashCode() : 0);
         return result;
     }
 }

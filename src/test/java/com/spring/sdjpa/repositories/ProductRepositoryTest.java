@@ -3,6 +3,7 @@ package com.spring.sdjpa.repositories;
 import com.spring.sdjpa.domain.Product;
 import com.spring.sdjpa.domain.ProductStatus;
 import com.spring.sdjpa.repo.ProductRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -20,6 +21,13 @@ public class ProductRepositoryTest {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Test
+    void setUp() {
+        Product prod = productRepository.findByDescription("PRODUCT1");
+        assertNotNull(prod);
+        assertNotNull(prod.getCategorySet());
+    }
 
     @Test
     void testSaveOrder() {

@@ -1,11 +1,12 @@
 package com.spring.sdjpa.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -14,6 +15,13 @@ public class Product extends BaseEntity{
     private String description;
     @Enumerated(EnumType.STRING)
     private ProductStatus productStatus;
+    @ManyToMany
+    @JoinTable(
+            name = "product_category_join",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categorySet;
 
     @Override
     public boolean equals(Object o) {
